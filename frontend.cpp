@@ -1,37 +1,14 @@
-#include "frontend.h"
-#include "backend.h"
-#include "games.h"
+#include "Frontend.h"
+#include "Textbox.h"
+#include "Backend.h"
+#include "Games.h"
+#include "Button.h"
 
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include <string>
 
 using namespace std;
-
-// Helper functions
-
-void setupText(sf::Text &text, const string &str, sf::Font &font, int size, sf::Color color, sf::Vector2f position) {
-    text.setString(str);
-    text.setFont(font);
-    text.setCharacterSize(size);
-    text.setFillColor(color);
-    text.setStyle(sf::Text::Bold);
-    text.setPosition(position);
-}
-
-void setupRectangle(sf::RectangleShape &rec, sf::Vector2f size, sf::Vector2f position, sf::Color outline_color, sf:: Color fill_color) {
-    rec.setSize(size);
-    rec.setOutlineThickness(5);
-    rec.setOutlineColor(outline_color);
-    rec.setFillColor(fill_color);
-    rec.setPosition(position);
-}
-
-void setText (sf::Text& text, float x, float y) {
-    sf::FloatRect textRect = text.getLocalBounds();
-    text.setOrigin(textRect.left + textRect.width/2.0f, textRect.top + textRect.height/2.0f);
-    text.setPosition(sf::Vector2f(x,y));
-}
 
 void runFrontend() {
     const int WINDOW_WIDTH = 1200;
@@ -89,6 +66,10 @@ void runFrontend() {
         WINDOW_HEIGHT / 2 + 100), sf::Color::Black, sf::Color(237, 232, 245, 255));
 
     // Textbox
+    Textbox userInputTextbox(20, sf::Color::Black, false);
+    userInputTextbox.setFont(font);
+    userInputTextbox.setPosition(sf::Vector2f(WINDOW_WIDTH / 4.5 + 85, WINDOW_HEIGHT / 3.5 + 10));
+
     sf::RectangleShape userInputBox;
     setupRectangle(userInputBox, sf::Vector2f(420.5, 50), sf::Vector2f(WINDOW_WIDTH / 4.5 - 125,
         WINDOW_HEIGHT / 3.5 - 10), sf::Color::Black, sf::Color(237, 232, 245, 255));
@@ -100,6 +81,37 @@ void runFrontend() {
             switch (event.type) {
                 case sf::Event::Closed:
                     window.close();
+                    break;
+                case sf::Event::TextEntered:
+                    userInputTextbox.typing(event);
+                    break;
+                case sf::Event::MouseButtonPressed:
+                    if (event.mouseButton.button == sf::Mouse::Left) {
+                        sf::Vector2f mousePosition = sf::Vector2f(event.mouseButton.x,event.mouseButton.y);
+                        // Clicking the textbox
+                        if (userInputBox.getGlobalBounds().contains(mousePosition)) {
+                            userInputTextbox.setSelected(true);
+                        } else {
+                            userInputTextbox.setSelected(false);
+                        }
+                    }
+                    break;
+                case sf::Event::KeyPressed:
+                    // Pressing enter after typing the game name
+                    if (event.key.code == sf::Keyboard::Enter && userInputTextbox.getSelected()) {
+                        // This is what the user typed in the textbox
+                        string userInput = userInputTextbox.getText();
+                        // Make sure nothing is printed if nothing is entered
+                        if (userInput.empty()) {
+                            recommendedGames = "";
+                            performanceOutput = "";
+                        } else { // Call backend and time how long it takes for the alg to run
+                            recommendedGames = "The recommended games goes here";
+                            performanceOutput = "The performance of the algs goes here";
+                        }
+                        // Unselect after pressing enter
+                        userInputTextbox.setSelected(false);
+                    }
                     break;
             }
         }
@@ -127,6 +139,7 @@ void runFrontend() {
         window.draw(performanceRec);
         window.draw(performanceOutputText);
         window.draw(userInputBox);
+        userInputTextbox.draw(window);
         window.display();
     }
 }
