@@ -39,7 +39,7 @@ void runFrontend() {
     sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "DSA_PROJECT");
 
     sf::Font font;
-    font.loadFromFile("DSA_PROJECT/times.ttf");
+    font.loadFromFile("Font/times.ttf");
 
     // Title
     sf::Text titleText;
