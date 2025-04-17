@@ -3,6 +3,7 @@
 #include "Backend.h"
 #include "Games.h"
 #include "Button.h"
+#include <chrono>
 
 #include <SFML/Graphics.hpp>
 #include <iostream>
@@ -118,18 +119,46 @@ void runFrontend() {
                     if (event.key.code == sf::Keyboard::Enter && userInputTextbox.getSelected()) {
                         string userInput = userInputTextbox.getText();
                         // Make sure nothing is printed if nothing is entered
-                        if (userInput.empty()) {
+                        if (userInput.empty())
+                        {
                             recommendedGames = "";
                             performanceOutput = "";
-                        // This is what needs work
-                        // Call findMostSimilarGame() and change the recommened games
                         }
                         else if (!userInput.empty() && (mergeSortButton.getSelected() || quickSortButton.getSelected()))
                         {
                             // Load the game dataset
                             vector<Game> games = loadGamesFromCSV("video_games.csv");
 
-                            // Try to find the game the user entered
+                            // Start timing
+                            using namespace std::chrono;
+                            auto start = high_resolution_clock::now();
+
+                            // Sort the games (we're just measuring performance, not using the result here)
+                            vector<Game> sortedGames;
+                            if (mergeSortButton.getSelected())
+                            {
+                                sortedGames = mergeSort(games, [](const Game& a, const Game& b)
+                                {
+                                    return a.review_score > b.review_score;
+                                });
+                            }
+                            else
+                            {
+                                sortedGames = quickSort(games, [](const Game& a, const Game& b)
+                                {
+                                    return a.review_score > b.review_score;
+                                });
+                            }
+
+                            // End timing and record duration
+                            auto end = high_resolution_clock::now();
+                            auto duration = duration_cast<microseconds>(end - start).count();
+
+                            // Update performance output
+                            performanceOutput = (mergeSortButton.getSelected() ? "Merge Sort" : "Quick Sort");
+                            performanceOutput += " took " + to_string(duration) + " microseconds.";
+
+                            // Find and recommend similar game
                             auto it = find_if(games.begin(), games.end(), [&](const Game& g)
                             {
                                 return g.title == userInput;
@@ -144,9 +173,6 @@ void runFrontend() {
                             {
                                 recommendedGames = "Game not found. Please try again.";
                             }
-
-                            // Performance logic could go here too
-                            performanceOutput = "";
                         }
                         userInputTextbox.setSelected(false);
                         cout << userInput << endl;
