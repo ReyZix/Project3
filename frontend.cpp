@@ -10,6 +10,10 @@
 
 using namespace std;
 
+bool compareByReviewScore(const Game &a, const Game &b) {
+    return a.review_score > b.review_score;
+}
+
 void runFrontend() {
     const int WINDOW_WIDTH = 1200;
     const int WINDOW_HEIGHT = 800;
@@ -74,6 +78,10 @@ void runFrontend() {
     setupRectangle(userInputBox, sf::Vector2f(420.5, 50), sf::Vector2f(WINDOW_WIDTH / 4.5 - 125,
         WINDOW_HEIGHT / 3.5 - 10), sf::Color::Black, sf::Color(237, 232, 245, 255));
 
+    // Merge sort button
+    Button mergeSortButton(WINDOW_WIDTH / 4.5 - 125, WINDOW_HEIGHT / 3.5 + 75, "Merge Sort", font);
+    Button quickSortButton(WINDOW_WIDTH / 4.5 - 125, WINDOW_HEIGHT / 3.5 + 100, "Quick Sort", font);
+
     // Main window loop
     while (window.isOpen()) {
         sf::Event event;
@@ -94,12 +102,17 @@ void runFrontend() {
                         } else {
                             userInputTextbox.setSelected(false);
                         }
+                        // Clicking button
+                        if (mergeSortButton.checkIsSelected(mousePosition)) {
+                            quickSortButton.deselect();
+                        } else if (quickSortButton.checkIsSelected(mousePosition)) {
+                            mergeSortButton.deselect();
+                        }
                     }
                     break;
                 case sf::Event::KeyPressed:
                     // Pressing enter after typing the game name
                     if (event.key.code == sf::Keyboard::Enter && userInputTextbox.getSelected()) {
-                        // This is what the user typed in the textbox
                         string userInput = userInputTextbox.getText();
                         // Make sure nothing is printed if nothing is entered
                         if (userInput.empty()) {
@@ -109,8 +122,10 @@ void runFrontend() {
                             recommendedGames = "The recommended games goes here";
                             performanceOutput = "The performance of the algs goes here";
                         }
-                        // Unselect after pressing enter
                         userInputTextbox.setSelected(false);
+                        cout << userInput << endl;
+                        cout << "Merge Sort: " << mergeSortButton.getSelected() << endl;
+                        cout << "Quick Sort: " << quickSortButton.getSelected() << endl;
                     }
                     break;
             }
@@ -140,6 +155,8 @@ void runFrontend() {
         window.draw(performanceOutputText);
         window.draw(userInputBox);
         userInputTextbox.draw(window);
+        mergeSortButton.draw(window);
+        quickSortButton.draw(window);
         window.display();
     }
 }
