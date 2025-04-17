@@ -20,12 +20,19 @@ void runFrontend() {
 
     // Title
     sf::Text titleText;
-    setupText(titleText, "MAIN MENU", font, 24, sf::Color::Black, sf::Vector2f(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 6 - 50));
-    setText(titleText, WINDOW_WIDTH / 2, WINDOW_HEIGHT / 6 - 50);
+    setupText(titleText, "MAIN MENU", font, 24, sf::Color::Black, sf::Vector2f(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 6 - 65));
+    setText(titleText, WINDOW_WIDTH / 2, WINDOW_HEIGHT / 6 - 65);
 
     sf::RectangleShape titleOutline;
     setupRectangle(titleOutline, sf::Vector2f(1004, 100), sf::Vector2f(WINDOW_WIDTH / 9 - 25,
         WINDOW_HEIGHT / 6 - 100), sf::Color::Black, sf::Color::Transparent);
+
+    // Instructions
+
+    sf::Text instructionsText;
+    setupText(instructionsText, "Start by selecting the sorting method you want to use. Then, enter the name of "
+        "the game to find another game with similar features", font, 16, sf::Color::Black, sf::Vector2f(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 6 - 25));
+    setText(instructionsText, WINDOW_WIDTH / 2 + 10, WINDOW_HEIGHT / 6 - 25);
 
     // Input
     sf::Text enterText;
@@ -114,7 +121,9 @@ void runFrontend() {
                         if (userInput.empty()) {
                             recommendedGames = "";
                             performanceOutput = "";
-                        } else { // Call backend and time how long it takes for the alg to run
+                        // This is what needs work
+                        // Call findMostSimilarGame() and change the recommened games
+                        } else if (!userInput.empty() && (mergeSortButton.getSelected() || quickSortButton.getSelected())){
                             recommendedGames = "The recommended games goes here";
                             performanceOutput = "The performance of the algs goes here";
                         }
@@ -139,6 +148,7 @@ void runFrontend() {
         window.clear(sf::Color(134, 151, 196, 255));
         window.draw(titleText);
         window.draw(titleOutline);
+        window.draw(instructionsText);
         window.draw(enterText);
         window.draw(enterOutline);
         window.draw(recommendedText);
