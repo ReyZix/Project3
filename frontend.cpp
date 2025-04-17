@@ -123,9 +123,30 @@ void runFrontend() {
                             performanceOutput = "";
                         // This is what needs work
                         // Call findMostSimilarGame() and change the recommened games
-                        } else if (!userInput.empty() && (mergeSortButton.getSelected() || quickSortButton.getSelected())){
-                            recommendedGames = "The recommended games goes here";
-                            performanceOutput = "The performance of the algs goes here";
+                        }
+                        else if (!userInput.empty() && (mergeSortButton.getSelected() || quickSortButton.getSelected()))
+                        {
+                            // Load the game dataset
+                            vector<Game> games = loadGamesFromCSV("video_games.csv");
+
+                            // Try to find the game the user entered
+                            auto it = find_if(games.begin(), games.end(), [&](const Game& g)
+                            {
+                                return g.title == userInput;
+                            });
+
+                            if (it != games.end())
+                            {
+                                Game recommended = findMostSimilarGame(*it, games);
+                                recommendedGames = "We recommend: " + recommended.title;
+                            }
+                            else
+                            {
+                                recommendedGames = "Game not found. Please try again.";
+                            }
+
+                            // Performance logic could go here too
+                            performanceOutput = "";
                         }
                         userInputTextbox.setSelected(false);
                         cout << userInput << endl;
