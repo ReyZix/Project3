@@ -123,3 +123,60 @@ vector<Game> quickSort(const vector<Game>& games, bool(*comp)(const Game&, const
     quickSortHelper(sorted, 0, sorted.size() - 1, comp);
     return sorted;
 }
+
+// This function compares the input game with every other game in the dataset
+// and returns the game that is most similar based on shared attributes.
+// The more matching characteristics (publisher, genre, etc.), the higher the similarity score.
+Game findMostSimilarGame(const Game& target, const vector<Game>& games)
+{
+    int bestScore = -1; // Keeps track of the highest similarity score
+    Game mostSimilar;   // Stores the best current match
+
+    for (const auto& game : games)
+    {
+        if (game.title == target.title)
+        {
+          continue; // Skip comparing the game to itself
+        }
+
+        int score = 0;
+
+        // Add points for sharing publisher (strong indicator of style/game quality)
+        if (game.publisher == target.publisher)
+        {
+            score += 3;
+        }
+
+        // Add points for matching ESRB rating
+        if (game.esrb_rating == target.esrb_rating)
+        {
+            score += 2;
+        }
+
+        // Add points for matching genre
+        if (game.genre == target.genre)
+        {
+            score += 2;
+        }
+
+        // Add a point if both support or don't support online play
+        if (game.online_play == target.online_play)
+        {
+            score += 1;
+        }
+
+        // Add a point if the review scores are close (within 1 point)
+        if (abs(game.review_score - target.review_score) <= 1)
+        {
+            score += 1;
+        }
+
+        // Update best match if this game has a higher score
+        if (score > bestScore)
+        {
+            bestScore = score;
+            mostSimilar = game;
+        }
+    }
+    return mostSimilar;
+}
