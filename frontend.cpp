@@ -46,9 +46,10 @@ void runFrontend() {
 
     // Recommended output
     string recommendedGames;
+    string actualGame;
 
     sf::Text recommendedText;
-    setupText(recommendedText, "RECOMMENDED GAMES", font, 24, sf::Color::Black, sf::Vector2f(WINDOW_WIDTH / 1.25 - 95, WINDOW_HEIGHT / 3.5 - 50));
+    setupText(recommendedText, "RECOMMENDED GAME", font, 24, sf::Color::Black, sf::Vector2f(WINDOW_WIDTH / 1.25 - 95, WINDOW_HEIGHT / 3.5 - 50));
     setText(recommendedText, WINDOW_WIDTH / 1.25 - 95, WINDOW_HEIGHT / 3.5 - 50);
 
     sf::RectangleShape recommendedOutline;
@@ -167,17 +168,16 @@ void runFrontend() {
                             if (it != games.end())
                             {
                                 Game recommended = findMostSimilarGame(*it, games);
-                                recommendedGames = "We recommend: " + recommended.title;
+                                recommendedGames = "We recommend:\n";
+                                actualGame = recommended.title;
                             }
                             else
                             {
+                                actualGame = "";
                                 recommendedGames = "Game not found. Please try again.";
                             }
                         }
                         userInputTextbox.setSelected(false);
-                        cout << userInput << endl;
-                        cout << "Merge Sort: " << mergeSortButton.getSelected() << endl;
-                        cout << "Quick Sort: " << quickSortButton.getSelected() << endl;
                     }
                     break;
             }
@@ -185,11 +185,15 @@ void runFrontend() {
 
         sf::Text recommendedGamesText(recommendedGames, font, 20);
         recommendedGamesText.setFillColor(sf::Color::Black);
-        setText(recommendedGamesText, WINDOW_WIDTH / 1.25 - 95, WINDOW_HEIGHT / 3.5);
+        setText(recommendedGamesText, WINDOW_WIDTH / 1.25 - 95, WINDOW_HEIGHT / 3.5 + 50);
 
-        sf::Text performanceOutputText(performanceOutput, font, 20);
+        sf::Text actualGameText(actualGame, font, 20);
+        actualGameText.setFillColor(sf::Color::Black);
+        setText(actualGameText, WINDOW_WIDTH/ 1.25 - 95, WINDOW_HEIGHT / 3.5 + 65);
+
+        sf::Text performanceOutputText(performanceOutput, font, 30);
         performanceOutputText.setFillColor(sf::Color::Black);
-        setText(performanceOutputText, WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2 + 125);
+        setText(performanceOutputText, WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2 + 200);
 
         // Draw everything
         window.clear(sf::Color(134, 151, 196, 255));
@@ -202,6 +206,7 @@ void runFrontend() {
         window.draw(recommendedOutline);
         window.draw(recommendedRec);
         window.draw(recommendedGamesText);
+        window.draw(actualGameText);
         window.draw(performanceLabel);
         window.draw(performanceOutline);
         window.draw(performanceRec);
