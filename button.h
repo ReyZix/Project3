@@ -20,3 +20,17 @@ public:
     bool getSelected();
     string getTypeOfSort();
 };
+
+class recButton {
+private:
+    sf::RectangleShape button;
+    sf::Text text;
+public:
+    recButton();
+    recButton(string t, sf::Vector2f size, sf::Color bgColor, sf::Color textColor, sf::Font& font);
+    void setBackgroundColor(sf::Color color);
+    void setTextColor(sf::Color color);
+    void setPosition(sf::Vector2f pos);
+    bool isMouseOver(sf::RenderWindow& window);
+    void draw(sf::RenderWindow& window);
+};
