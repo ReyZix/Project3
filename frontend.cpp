@@ -4,32 +4,26 @@
 #include "Games.h"
 #include "Button.h"
 #include <chrono>
-
 #include <SFML/Graphics.hpp>
-
 #include <string>
 
-
 using namespace std;
-//push
+
 void runFrontend() {
 
 
     const int WINDOW_WIDTH = 1200;
     const int WINDOW_HEIGHT = 800;
+    sf::Color customTextBoxColor = sf::Color(237, 232, 245, 255);
     sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "DSA_PROJECT");
 
     sf::Font font;
     font.loadFromFile("Font/times.ttf");
 
-
-
     // Title
     sf::Text titleText;
     setupText(titleText, "MAIN MENU", font, 24, sf::Color::Black, sf::Vector2f(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 6 - 65));
     setText(titleText, WINDOW_WIDTH / 2, WINDOW_HEIGHT / 6 - 65);
-
-
 
     sf::RectangleShape titleOutline;
     setupRectangle(titleOutline, sf::Vector2f(1004, 100), sf::Vector2f(WINDOW_WIDTH / 9 - 25,
@@ -64,7 +58,8 @@ void runFrontend() {
         WINDOW_HEIGHT / 3.5 - 75), sf::Color::Black, sf::Color::Transparent);
 
     sf::RectangleShape recommendedRec;
-    setupRectangle(recommendedRec, sf::Vector2f(420.5, 150), sf::Vector2f(WINDOW_WIDTH / 2 + 55, WINDOW_HEIGHT / 3.5 - 15), sf::Color::Black, sf::Color(237, 232, 245, 255));
+    setupRectangle(recommendedRec, sf::Vector2f(420.5, 150), sf::Vector2f(WINDOW_WIDTH / 2 + 55,
+        WINDOW_HEIGHT / 3.5 - 15), sf::Color::Black, customTextBoxColor);
 
     // Performance output
     string performanceOutput;
@@ -79,7 +74,7 @@ void runFrontend() {
 
     sf::RectangleShape performanceRec;
     setupRectangle(performanceRec, sf::Vector2f(935, 200), sf::Vector2f(WINDOW_WIDTH / 4.5 - 125,
-        WINDOW_HEIGHT / 2 + 100), sf::Color::Black, sf::Color(237, 232, 245, 255));
+        WINDOW_HEIGHT / 2 + 100), sf::Color::Black, customTextBoxColor);
 
     // Textbox
     Textbox userInputTextbox(20, sf::Color::Black, false);
@@ -88,7 +83,11 @@ void runFrontend() {
 
     sf::RectangleShape userInputBox;
     setupRectangle(userInputBox, sf::Vector2f(420.5, 50), sf::Vector2f(WINDOW_WIDTH / 4.5 - 125,
-        WINDOW_HEIGHT / 3.5 - 10), sf::Color::Black, sf::Color(237, 232, 245, 255));
+        WINDOW_HEIGHT / 3.5 - 10), sf::Color::Black, customTextBoxColor);
+
+    // Enter Box
+    recButton clickEnterBox("Enter", sf::Vector2f(210, 47),customTextBoxColor, sf::Color::Black, font);
+    clickEnterBox.setPosition(sf::Vector2f(WINDOW_WIDTH / 4.5 + 85, WINDOW_HEIGHT / 3.5 + 80));
 
     // Merge sort button
     Button mergeSortButton(WINDOW_WIDTH / 4.5 - 125, WINDOW_HEIGHT / 3.5 + 75, "Merge Sort", font);
@@ -120,82 +119,80 @@ void runFrontend() {
                         } else if (quickSortButton.checkIsSelected(mousePosition)) {
                             mergeSortButton.deselect();
                         }
-                    }
-                    break;
-                case sf::Event::KeyPressed:
-                    // Pressing enter after typing the game name
-                    if (event.key.code == sf::Keyboard::Enter && userInputTextbox.getSelected()) {
-                        string userInput = userInputTextbox.getText();
-                        // Make sure nothing is printed if nothing is entered
-                        if (userInput.empty())
-                        {
-                            recommendedGames = "";
-                            performanceOutput = "";
-                        }
-                        else if (!userInput.empty() && (mergeSortButton.getSelected() || quickSortButton.getSelected()))
-                        {
-                            // Load the game dataset
-                            vector<Game> games = loadGamesFromCSV("video_games.csv");
-                            //cout << "Loaded games: " << games.size() << endl;
-                            // debugging bc recommendations weren't working
-
-
-                            // Start timing
-                            using namespace std::chrono;
-                            auto start = high_resolution_clock::now();
-
-                            // Sort the games (we're just measuring performance, not using the result here)
-                            vector<Game> sortedGames;
-                            if (mergeSortButton.getSelected())
-                            {
-                                sortedGames = mergeSort(games, [](const Game& a, const Game& b)
+                        // Clicking the enter button
+                        if (clickEnterBox.isMouseOver(window)) {
+                            string userInput = userInputTextbox.getText();
+                            // Make sure nothing is printed if nothing is entered
+                            if (userInput.empty())
                                 {
-                                    return a.review_score > b.review_score;
-                                });
-                            }
-                            else
-                            {
-                                sortedGames = quickSort(games, [](const Game& a, const Game& b)
+                                recommendedGames = "";
+                                performanceOutput = "";
+                                }
+                            else if (!userInput.empty() && (mergeSortButton.getSelected() || quickSortButton.getSelected()))
                                 {
-                                    return a.review_score > b.review_score;
+                                // Load the game dataset
+                                vector<Game> games = loadGamesFromCSV("video_games.csv");
+
+                                // Start timing
+                                using namespace std::chrono;
+                                auto start = high_resolution_clock::now();
+
+                                // Sort the games (we're just measuring performance, not using the result here)
+                                vector<Game> sortedGames;
+                                if (mergeSortButton.getSelected())
+                                    {
+                                    sortedGames = mergeSort(games, [](const Game& a, const Game& b)
+                                        {
+                                        return a.review_score > b.review_score;
+                                        });
+                                    }
+                                else
+                                    {
+                                    sortedGames = quickSort(games, [](const Game& a, const Game& b)
+                                        {
+                                        return a.review_score > b.review_score;
+                                        });
+                                    }
+
+                                // End timing and record duration
+                                auto end = high_resolution_clock::now();
+                                auto duration = duration_cast<microseconds>(end - start).count();
+
+                                // Update performance output
+                                performanceOutput = (mergeSortButton.getSelected() ? "Merge Sort" : "Quick Sort");
+                                performanceOutput += " took " + to_string(duration) + " microseconds.";
+
+                                // Find and recommend similar game
+
+                                auto normalize = [](string str) {
+                                    // Remove the quotes
+                                    if (!str.empty() && str.front() == '"' && str.back() == '"') {
+                                        str = str.substr(1, str.size() - 2);
+                                    }
+                                    transform(str.begin(), str.end(), str.begin(), ::tolower);
+                                    str.erase(remove_if(str.begin(), str.end(), ::isspace), str.end());
+                                    return str;
+                                };
+
+                                // Search for the game
+                                auto it = find_if(games.begin(), games.end(), [&](const Game& g) {
+                                    return normalize(g.title) == normalize(userInput);
                                 });
-                            }
 
-                            // End timing and record duration
-                            auto end = high_resolution_clock::now();
-                            auto duration = duration_cast<microseconds>(end - start).count();
-
-                            // Update performance output
-                            performanceOutput = (mergeSortButton.getSelected() ? "Merge Sort" : "Quick Sort");
-                            performanceOutput += " took " + to_string(duration) + " microseconds.";
-
-                            // Find and recommend similar game
-
-                            auto normalize = [](string str) {
-                                transform(str.begin(), str.end(), str.begin(), ::tolower);
-                                str.erase(remove_if(str.begin(), str.end(), ::isspace), str.end());
-                                return str;
-                            };
-
-                            // Search for the game
-                            auto it = find_if(games.begin(), games.end(), [&](const Game& g) {
-                                return normalize(g.title) == normalize(userInput);
-                            });
-
-
-                            if (it != games.end())
-                            {
-                                Game recommended = findMostSimilarGame(*it, games);
-                                recommendedGames = "We recommend:\n";
-                                actualGame = recommended.title;
-                            }
-                            else
-                            {
-                                actualGame = "";
-                                recommendedGames = "Game not found. Please try again.";
-                            }
+                                if (it != games.end())
+                                    {
+                                    Game recommended = findMostSimilarGame(*it, games);
+                                    recommendedGames = "We recommend:\n";
+                                    actualGame = recommended.title;
+                                    }
+                                else
+                                    {
+                                    actualGame = "";
+                                    recommendedGames = "Game not found. Please try again.";
+                                    }
+                                }
+                            userInputTextbox.setSelected(false);
                         }
-                        userInputTextbox.setSelected(false);
                     }
                     break;
             }
@@ -230,6 +227,7 @@ void runFrontend() {
         window.draw(performanceRec);
         window.draw(performanceOutputText);
         window.draw(userInputBox);
+        clickEnterBox.draw(window);
         userInputTextbox.draw(window);
         mergeSortButton.draw(window);
         quickSortButton.draw(window);
