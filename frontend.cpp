@@ -6,12 +6,15 @@
 #include <chrono>
 
 #include <SFML/Graphics.hpp>
-#include <iostream>
+
 #include <string>
+
 
 using namespace std;
 
 void runFrontend() {
+
+
     const int WINDOW_WIDTH = 1200;
     const int WINDOW_HEIGHT = 800;
     sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "DSA_PROJECT");
@@ -19,10 +22,14 @@ void runFrontend() {
     sf::Font font;
     font.loadFromFile("Font/times.ttf");
 
+
+
     // Title
     sf::Text titleText;
     setupText(titleText, "MAIN MENU", font, 24, sf::Color::Black, sf::Vector2f(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 6 - 65));
     setText(titleText, WINDOW_WIDTH / 2, WINDOW_HEIGHT / 6 - 65);
+
+
 
     sf::RectangleShape titleOutline;
     setupRectangle(titleOutline, sf::Vector2f(1004, 100), sf::Vector2f(WINDOW_WIDTH / 9 - 25,
@@ -129,6 +136,9 @@ void runFrontend() {
                         {
                             // Load the game dataset
                             vector<Game> games = loadGamesFromCSV("video_games.csv");
+                            //cout << "Loaded games: " << games.size() << endl;
+                            // debugging bc recommendations weren't working
+
 
                             // Start timing
                             using namespace std::chrono;
@@ -160,10 +170,18 @@ void runFrontend() {
                             performanceOutput += " took " + to_string(duration) + " microseconds.";
 
                             // Find and recommend similar game
-                            auto it = find_if(games.begin(), games.end(), [&](const Game& g)
-                            {
-                                return g.title == userInput;
+
+                            auto normalize = [](string str) {
+                                transform(str.begin(), str.end(), str.begin(), ::tolower);
+                                str.erase(remove_if(str.begin(), str.end(), ::isspace), str.end());
+                                return str;
+                            };
+
+                            // Search for the game
+                            auto it = find_if(games.begin(), games.end(), [&](const Game& g) {
+                                return normalize(g.title) == normalize(userInput);
                             });
+
 
                             if (it != games.end())
                             {

@@ -1,0 +1,18 @@
+# ninja log v6
+15	70	7668165381243116	CMakeFiles/Project3.dir/main.cpp.obj	340d8c47e04c7ca5
+19	654	7668165381278837	CMakeFiles/Project3.dir/backend.cpp.obj	c87acde0d8bffe0b
+680	826	7668183966012641	Project3.exe	d1f87aa1a4d84340
+7	679	7668183959287371	CMakeFiles/Project3.dir/frontend.cpp.obj	e036b2ccf73be2b1
+17	25	7668165353224269	clean	f1c0810b4f0350db
+28	752	7668165381371987	CMakeFiles/Project3.dir/button.cpp.obj	a82770d653f96e18
+3	319	7668187004045870	build.ninja	cf6f1a5e87ff4e78
+25	756	7668165381337704	CMakeFiles/Project3.dir/textbox.cpp.obj	917cd9f08088fbf3
+2	481	7668187004045870	build.ninja	cf6f1a5e87ff4e78
+22	682	7668187004824613	CMakeFiles/Project3.dir/frontend.cpp.obj	e036b2ccf73be2b1
+682	806	7668187011421908	Project3.exe	a541ce12e3b5c102
+9	807	7668189384122420	CMakeFiles/Project3.dir/frontend.cpp.obj	e036b2ccf73be2b1
+808	932	7668189392109828	Project3.exe	a541ce12e3b5c102
+7	682	7668197181013143	CMakeFiles/Project3.dir/frontend.cpp.obj	e036b2ccf73be2b1
+683	808	7668197187766427	Project3.exe	a541ce12e3b5c102
+6	796	7668197507008486	CMakeFiles/Project3.dir/frontend.cpp.obj	e036b2ccf73be2b1
+797	971	7668197514912401	Project3.exe	a541ce12e3b5c102
