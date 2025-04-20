@@ -59,3 +59,56 @@ bool Button::getSelected() {
 string Button::getTypeOfSort() {
     return typeOfSort.getString();
 }
+
+// Rectangular Button Methods
+
+recButton::recButton() {}
+
+recButton::recButton(string t, sf::Vector2f size, sf::Color bgColor, sf::Color textColor, sf::Font& font) {
+    text.setString(t);
+    text.setFont(font);
+    text.setColor(textColor);
+    text.setCharacterSize(24);
+
+    button.setSize(size);
+    button.setFillColor(bgColor);
+    button.setOutlineColor(textColor);
+    button.setOutlineThickness(5);
+}
+
+void recButton::setBackgroundColor(sf::Color color) {
+    button.setFillColor(color);
+}
+
+void recButton::setTextColor(sf::Color color) {
+    text.setColor(color);
+}
+
+void recButton::setPosition(sf::Vector2f pos) {
+    button.setPosition(pos);
+
+    float xpos = (pos.x + button.getGlobalBounds().width / 2) - (text.getGlobalBounds().width / 2);
+    float ypos = (pos.y + button.getGlobalBounds().height / 2) - (text.getGlobalBounds().height / 2);
+    text.setPosition({xpos - 5, ypos - 12});
+}
+
+bool recButton::isMouseOver(sf::RenderWindow& window) {
+    float mouseX = sf::Mouse::getPosition(window).x;
+    float mouseY = sf::Mouse::getPosition(window).y;
+
+    float btnX = button.getPosition().x;
+    float btnY = button.getPosition().y;
+
+    float btnXWidth = button.getPosition().x + button.getLocalBounds().width;
+    float btnYHeight = button.getPosition().y + button.getLocalBounds().height;
+
+    if (mouseX < btnXWidth && mouseX > btnX && mouseY < btnYHeight && mouseY > btnY) {
+        return true;
+    }
+    return false;
+}
+
+void recButton::draw(sf::RenderWindow& window) {
+    window.draw(button);
+    window.draw(text);
+}
