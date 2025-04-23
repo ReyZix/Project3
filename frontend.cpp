@@ -50,7 +50,7 @@ void runFrontend() {
     string actualGame;
 
     sf::Text recommendedText;
-    setupText(recommendedText, "RECOMMENDED GAME", font, 24, sf::Color::Black, sf::Vector2f(WINDOW_WIDTH / 1.25 - 95, WINDOW_HEIGHT / 3.5 - 50));
+    setupText(recommendedText, "RECOMMENDED GAMES", font, 24, sf::Color::Black, sf::Vector2f(WINDOW_WIDTH / 1.25 - 95, WINDOW_HEIGHT / 3.5 - 50));
     setText(recommendedText, WINDOW_WIDTH / 1.25 - 95, WINDOW_HEIGHT / 3.5 - 50);
 
     sf::RectangleShape recommendedOutline;
@@ -181,9 +181,14 @@ void runFrontend() {
 
                                 if (it != games.end())
                                     {
-                                    Game recommended = findMostSimilarGame(*it, games);
+                                    vector<Game> recommendations = findTopSimilarGames(*it, games, 3);
                                     recommendedGames = "We recommend:\n";
-                                    actualGame = recommended.title;
+
+                                    actualGame = "";
+                                    for (const auto& g : recommendations) {
+                                        recommendedGames += "- " + g.title + "\n";
+                                    }
+
                                     }
                                 else
                                     {
@@ -209,6 +214,11 @@ void runFrontend() {
         sf::Text performanceOutputText(performanceOutput, font, 30);
         performanceOutputText.setFillColor(sf::Color::Black);
         setText(performanceOutputText, WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2 + 200);
+
+
+
+
+
 
         // Draw everything
         window.clear(sf::Color(134, 151, 196, 255));

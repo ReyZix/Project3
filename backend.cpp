@@ -3,7 +3,8 @@
 #include <sstream>
 #include <iostream>
 #include <cmath>
-
+#include <set>
+#include <algorithm>
 //EVERYTHING WITH SKIP WE WILL GO BACK TO AND DECIDE!!!!
 
 using namespace std;
@@ -121,7 +122,7 @@ vector<Game> quickSort(const vector<Game>& games, bool(*comp)(const Game&, const
     return sorted;
 }
 
-
+/*
 // the more the matching characteristics higher the similiarity score
 Game findMostSimilarGame(const Game& target, const vector<Game>& games)
 {
@@ -175,4 +176,45 @@ Game findMostSimilarGame(const Game& target, const vector<Game>& games)
         }
     }
     return mostSimilar;
+}
+*/
+vector<Game> findTopSimilarGames(const Game& target, const vector<Game>& games, int topN) {
+    vector<pair<Game, int>> scoredGames;
+
+    for (const auto& game : games) {
+        if (game.title == target.title)
+            continue;
+
+        int score = 0;
+
+        if (game.publisher == target.publisher) score += 3;
+        if (game.esrb_rating == target.esrb_rating) score += 2;
+        if (game.genre == target.genre) score += 2;
+        if (game.online_play == target.online_play) score += 1;
+        if (abs(game.review_score - target.review_score) <= 1) score += 1;
+
+        scoredGames.push_back({game, score});
+    }
+
+    // Sort descending by score, break ties by review_score similarity
+    sort(scoredGames.begin(), scoredGames.end(), [&](const pair<Game, int>& a, const pair<Game, int>& b) {
+        if (a.second != b.second) return a.second > b.second;
+        int aDiff = abs(a.first.review_score - target.review_score);
+        int bDiff = abs(b.first.review_score - target.review_score);
+        return aDiff < bDiff;
+    });
+
+    vector<Game> topResults;
+    set<string> seenTitles;
+    for (const auto& [game, score] : scoredGames) {
+        if (seenTitles.count(game.title) == 0) {
+            topResults.push_back(game);
+            seenTitles.insert(game.title);
+        }
+        if (topResults.size() >= topN)
+            break;
+    }
+
+
+    return topResults;
 }
