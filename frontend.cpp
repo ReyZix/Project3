@@ -15,7 +15,7 @@ void runFrontend() {
     const int WINDOW_WIDTH = 1200;
     const int WINDOW_HEIGHT = 800;
     sf::Color customTextBoxColor = sf::Color(237, 232, 245, 255);
-    sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "DSA_PROJECT");
+    sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Press Play");
 
     sf::Font font;
     font.loadFromFile("Font/times.ttf");

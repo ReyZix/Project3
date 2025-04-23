@@ -18,7 +18,7 @@ vector<Game> loadGamesFromCSV(const string& filePath) {
         return games;
     }
 
-    getline(file, line); // Skip header
+
 
     while (getline(file, line)) {
         stringstream ss(line);
@@ -26,17 +26,15 @@ vector<Game> loadGamesFromCSV(const string& filePath) {
         Game g;
 
         getline(ss, g.title, ',');
-        getline(ss, token, ','); // skip handheld
-        getline(ss, token, ','); // skip max players
-        getline(ss, token, ','); // skip multiplatform
+
 
         getline(ss, token, ','); // online play
         g.online_play = (token == "True" || token == "true");
 
         getline(ss, g.genre, ','); // genre
-        getline(ss, token, ','); // skip licensed
+
         getline(ss, g.publisher, ','); // publisher
-        getline(ss, token, ','); // skip sequel
+
 
         getline(ss, token, ','); // review score
         try {
@@ -45,11 +43,10 @@ vector<Game> loadGamesFromCSV(const string& filePath) {
             g.review_score = 0;
         }
 
-        getline(ss, token, ','); // skip sales
-        getline(ss, token, ','); // skip used price
+
+
         getline(ss, g.platform, ','); // platform
         getline(ss, g.esrb_rating, ','); // esrb
-        getline(ss, token, ','); // skip re-release
 
         getline(ss, token, ','); // release year
         try {
@@ -73,7 +70,7 @@ vector<Game> loadGamesFromCSV(const string& filePath) {
     return games;
 }
 
-//Merge Sort
+
 vector<Game> mergeSort(const vector<Game>& games, bool(*comp)(const Game&, const Game&)) {
     if (games.size() <= 1)
         return games;
@@ -124,54 +121,53 @@ vector<Game> quickSort(const vector<Game>& games, bool(*comp)(const Game&, const
     return sorted;
 }
 
-// This function compares the input game with every other game in the dataset
-// and returns the game that is most similar based on shared attributes.
-// The more matching characteristics (publisher, genre, etc.), the higher the similarity score.
+
+// the more the matching characteristics higher the similiarity score
 Game findMostSimilarGame(const Game& target, const vector<Game>& games)
 {
-    int bestScore = -1; // Keeps track of the highest similarity score
-    Game mostSimilar;   // Stores the best current match
+    int bestScore = -1; // keep track of similarity score
+    Game mostSimilar;
 
     for (const auto& game : games)
     {
         if (game.title == target.title)
         {
-          continue; // Skip comparing the game to itself
+          continue; //skip comparing to self
         }
 
         int score = 0;
 
-        // Add points for sharing publisher (strong indicator of style/game quality)
+
         if (game.publisher == target.publisher)
         {
             score += 3;
         }
 
-        // Add points for matching ESRB rating
+
         if (game.esrb_rating == target.esrb_rating)
         {
             score += 2;
         }
 
-        // Add points for matching genre
+
         if (game.genre == target.genre)
         {
             score += 2;
         }
 
-        // Add a point if both support or don't support online play
+        // if both have or dont have online play add point
         if (game.online_play == target.online_play)
         {
             score += 1;
         }
 
-        // Add a point if the review scores are close (within 1 point)
+        // if scores close add point
         if (abs(game.review_score - target.review_score) <= 1)
         {
             score += 1;
         }
 
-        // Update best match if this game has a higher score
+        // update best score
         if (score > bestScore)
         {
             bestScore = score;
